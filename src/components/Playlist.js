@@ -1,129 +1,139 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-// create state to hold list of songs in playlist
-// identify playlist by id (to display songs)
-// user params from react-router-dom
-// useEffect (fetch request) -> connect to backend to find playlist by id
-// create route that uses id
-// fetch  request to route
-// then then catch, chaining
-// if response is successful, update state with setter function
-
-// const Playlist = () => {
-//   const { _id } = useParams();
-//   const [playlist, setPlaylist] = useState([]);
-
-//   useEffect(() => {
-//     fetch(`https://bumblebeat.onrender.com/playlist/:_id/edit`)
-//       .then((response) => response.json())
-//       .then((data) => setPlaylist(data.songs))
-//       .catch((error) => console.log(error));
-//   }, [{_id}]);
-
-//   const handleRemoveSong = (songId) => {
-//     fetch(`https://bumblebeat.onrender.com/playlist/${_id}/edit/songs/${songId}`, {
-//       method: 'DELETE'
-//     })
-//       .then((response) => {
-//         if (response.ok) {
-//           setPlaylist((prevPlaylist) =>
-//             prevPlaylist.filter((song) => song._id !== songId)
-//           );
-//         } else {
-//           throw new Error('Failed to remove song from playlist');
-//         }
-//       })
-//       .catch((error) => console.log(error));
-//   };
-
 const Playlist = () => {
-  const [createPlaylistFormData, setCreatePlaylistFormData] = useState({
-    playlistName: "",
-    songs: "",
-  });
+  const [playlist, setPlaylist] = useState([]);
+  const [playlistTitle, setPlaylistTitle] = useState("");
+  const [songId, setSongId] = useState("");
+  const { id } = useParams();
 
-  const handleCreatePlaylistFormDataChange = (e) => {
-    const { name, value } = e.target;
-    setCreatePlaylistFormData({
-      ...createPlaylistFormData,
-      [name]: value,
-    });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`https://bumblebeat.onrender.com/playlist/${id}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        console.log("Fetched data:", data); // Log fetched data
+
+        if (data?.songs?.length === 0) {
+          setPlaylistTitle("Sample Playlist");
+          setPlaylist([
+            {
+              id: 1,
+              title: "Driver's License",
+              artistName: "Olivia",
+              time: "3:30",
+            },
+            {
+              id: 2,
+              title: "Big Reputation",
+              artistName: "Taylor Swift",
+              time: "4:15",
+            },
+            {
+              id: 3,
+              title: "Year Without Rain",
+              artistName: "Selena Gomez",
+              time: "3:55",
+            },
+          ]);
+        } else {
+          setPlaylistTitle(data.title);
+          setPlaylist(data.songs);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error.message);
+        console.error('Stack trace:', error.stack);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const removeSong = async (songId) => {
+    try {
+      const response = await fetch(`https://bumblebeat.onrender.com/playlist/${id}/songs/${songId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setPlaylist(data);
+    } catch (error) {
+      console.error('Error removing song:', error.message);
+      console.error('Stack trace:', error.stack);
+    }
   };
-  console.log(createPlaylistFormData);
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    fetch("https://bumblebeat.onrender.com/playlist/create-playlist", {
-      method: "POST",
-      body: JSON.stringify(createPlaylistFormData),
-    })
-      .then((response) => response.json())
-      .then((result) => console.log(result));
+  const addSong = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch(`https://bumblebeat.onrender.com/playlist/${id}/songs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ songId })
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setPlaylist(data);
+      setSongId("");
+    } catch (error) {
+      console.error('Error adding song:', error.message);
+      console.error('Stack trace:', error.stack);
+    }
   };
-
-  //   return (
-  // <div>
-  //   <table>
-  //     <thead>
-  //       <tr>
-  //         <th>#</th>
-  //         <th>Title/Artist</th>
-  //         <th>Duration</th>
-  //         <th>Remove</th>
-  //       </tr>
-  //     </thead>
-  //     <tbody>
-  //       {playlist.map((song, index) => (
-  //         <tr key={song._id}>
-  //           <td>{index + 1}</td>
-  //           <td>{`${song.title} - ${song.artist}`}</td>
-  //           <td>{song.duration}</td>
-  //           <td>
-  //             <button onClick={() => handleRemoveSong(song._id)}>Remove</button>
-  //           </td>
-  //         </tr>
-  //       ))}
-  //     </tbody>
-  //   </table>
-  // </div>
 
   return (
-    <div className="playlist">
-      <form
-        id="createPlaylist"
-        className="createPlaylist"
-        onSubmit={handleFormSubmit}
-      >
-        <label>Playlist Name</label>
-        <br />
+    <div>
+      <h1>{playlistTitle}</h1>
+      <form id="playlistAddSong"
+      className="playlistAddSong" 
+      onSubmit={addSong}>
         <input
+        id="playlistAddSongInput"
           type="text"
-          name="playlistName"
-          id="playlistName"
-          placeholder="Playlist Name"
-          value={createPlaylistFormData.playlistName}
-          onChange={handleCreatePlaylistFormDataChange}
+          value={songId}
+          onChange={(e) => setSongId(e.target.value)}
+          placeholder="Enter song ID"
           required
         />
-        <br />
-        <label>Songs</label>
-        <br />
-        <textarea
-          type="text"
-          name="playlistSongs"
-          id="playlistSongs"
-          placeholder="Playlist Songs"
-          defaultValue="songs"
-          onChange={handleCreatePlaylistFormDataChange}
-          required
-        />
-        <br />
-        <br />
-        <button type="submit" value="Create Playlist">
-          Create Playlist
-        </button>
+        <button type="submit">Add Song</button>
       </form>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Song</th>
+            <th>Artist</th>
+            <th>Duration</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {playlist.map((song, index) => (
+            <tr key={song.id}>
+              <td>{index + 1}</td>
+              <td>{song.title}</td>
+              <td>{song.artistName}</td>
+              <td>{song.time}</td>
+              <td>
+                <button onClick={() => removeSong(song.id)}>Remove</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

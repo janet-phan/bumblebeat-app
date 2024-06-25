@@ -102,7 +102,8 @@ main {
   display: flex;
   flex-direction: column;
   flex-basis: 100%;
-  flex: 3;     
+  flex: 3;
+  margin-left: auto;
 }
 
 /* circular track playing */
@@ -113,6 +114,9 @@ main {
   background-color: var(--yellow);
   box-shadow: 0 0 10px var(--yellow);
   position: absolute;
+  background-image: url('/public/images/pexels-spring-toan-3704041.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .current-artist {
@@ -186,7 +190,7 @@ i {
   background-image: url(../public/images/yellow-soundwave.gif);
   background-size: contain;
   background-repeat: no-repeat;
-  margin-left: -5em;
+  background-position: center;
 }
 
 /* volume, playback, track share/repeat/shuffle/add to list icons */
@@ -331,11 +335,11 @@ input[type="range"]::-webkit-slider-thumb {
   text-align: center;
 }
 
-.top-charts .now-playing-song {
+.top-charts .now-playing-song .currently-playing {
   height: 8em;
   width: 8em;
   border-radius: 50%;
-  background-image: url('../public/images/speak-now_taylor-swift.jpg');
+  background-image: url('/public/images/speak-now_taylor-swift.jpg');
   background-size: cover;
   z-index: 1;
   transform: scale(.5);

@@ -35,7 +35,7 @@ const Register = () => {
       <div className="register">
         <div className="register-left">
           <h1>Register</h1>
-          <img src="/public/images/bumblebeat-logo.png" />
+          <img src="images/bumblebeat-logo.png" />
         </div>
         <div className="register-right">
           <form
@@ -133,6 +133,7 @@ const Register = () => {
             <button type="submit" value="Sign Up!">
               Sign Up!
             </button>
+            
           </form>
         </div>
         <div className="google-login">

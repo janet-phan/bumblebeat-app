@@ -29,7 +29,7 @@ const Login = () => {
       <div className="login">
         <div className="login-left">
           <h1>Log In</h1>
-          <img src="/public/images/bumblebeat-logo.png" />
+          <img src="images/bumblebeat-logo.png" />
         </div>
         <div className="login-right">
           <form
@@ -77,7 +77,7 @@ const Login = () => {
           <br />
 
           <p id="register">
-            Not a user yet? <a href="register.html">Register now!</a>
+            Not a user yet? <a href="/register">Register now!</a>
           </p>
           <br />
         </div>

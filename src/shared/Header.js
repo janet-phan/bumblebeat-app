@@ -9,7 +9,7 @@ const Header = () => {
           <Link to="/">Home</Link>
         </li>
         <li>
-          <input type="text" placeholder="Search.." />
+          <input id="searchBar" type="text" placeholder="Search.." />
         </li>
         <li>
           <Link to="/playlist">Playlists</Link>
